@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -37,7 +38,7 @@ type InstanceType struct {
 	Memory               int64
 	HourlyBillingFlag    bool
 	LocalDiskFlag        bool
-	DiskCapacity         int
+	DisksCapacity	     []int
 	NetworkSpeed         int
 	ProvisioningSshKeyId int64
 	BaseImageId          string
@@ -242,7 +243,24 @@ func (self SoftlayerClient) CreateInstance(instance InstanceType) (map[string]in
 			Id: instance.BaseImageId,
 		}
 	} else {
+		//log.Printf("disks: %#v", instance.DisksCapacity)
 		instanceRequest.OsReferenceCode = instance.BaseOsCode
+		bds := make([]*BlockDevice, len(instance.DisksCapacity))
+		for i, v := range instance.DisksCapacity {
+		    bd := new(BlockDevice)
+		    if i > 0 {
+			bd.Device = strconv.Itoa(i + 1)
+		    } else {
+			bd.Device = "0"
+		    }
+            	    bd.DiskImage = &DiskImage{
+			Capacity: v,
+		    }
+		    bds[i] = bd
+		}
+		instanceRequest.BlockDevices = bds
+		
+		/*
 		instanceRequest.BlockDevices = []*BlockDevice{
 			&BlockDevice{
 				Device: "0",
@@ -250,7 +268,15 @@ func (self SoftlayerClient) CreateInstance(instance InstanceType) (map[string]in
 					Capacity: instance.DiskCapacity,
 				},
 			},
+                        &BlockDevice{
+                                Device: "2",
+                                DiskImage: &DiskImage{
+                                        Capacity: 999,
+                                },
+                        },
+
 		}
+		*/
 	}
 
 	requestBody, err := self.generateRequestBody(instanceRequest)

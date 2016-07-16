@@ -35,7 +35,7 @@ type Config struct {
 	InstanceCpu          int    `mapstructure:"instance_cpu"`
 	InstanceMemory       int64  `mapstructure:"instance_memory"`
 	InstanceNetworkSpeed int    `mapstructure:"instance_network_speed"`
-	InstanceDiskCapacity int    `mapstructure:"instance_disk_capacity"`
+	InstanceDisksCapacity []int `mapstructure:"instance_disks_capacity"`
 
 	RawStateTimeout string `mapstructure:"instance_state_timeout"`
 	StateTimeout    time.Duration
@@ -107,8 +107,9 @@ func (self *Builder) Prepare(raws ...interface{}) (parms []string, retErr error)
 		self.config.InstanceNetworkSpeed = 10
 	}
 
-	if self.config.InstanceDiskCapacity == 0 {
-		self.config.InstanceDiskCapacity = 25
+	if len(self.config.InstanceDisksCapacity) == 0 {
+		self.config.InstanceDisksCapacity = make([]int, 1)
+		self.config.InstanceDisksCapacity[0] = 25
 	}
 
 	if self.config.Comm.SSHUsername == "" {

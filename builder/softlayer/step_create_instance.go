@@ -31,7 +31,7 @@ func (self *stepCreateInstance) Run(state multistep.StateBag) multistep.StepActi
 		Memory:               config.InstanceMemory,
 		HourlyBillingFlag:    true,
 		LocalDiskFlag:        true,
-		DiskCapacity:         config.InstanceDiskCapacity,
+		DisksCapacity:         config.InstanceDisksCapacity,
 		NetworkSpeed:         config.InstanceNetworkSpeed,
 		ProvisioningSshKeyId: ProvisioningSshKeyId,
 		BaseImageId:          config.BaseImageId,
